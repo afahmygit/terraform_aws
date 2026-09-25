@@ -1708,6 +1708,52 @@ variable "flow_log_cloudwatch_log_group_class" {
   default     = null
 }
 
+################################################################################
+# CloudWatch Monitoring & Dashboard
+################################################################################
+
+variable "enable_cloudwatch_dashboard" {
+  description = "Should be true to create a CloudWatch Dashboard for the VPC and its resources (NAT Gateways, Flow Logs, Network Address Usage, etc.)"
+  type        = bool
+  default     = false
+}
+
+variable "cloudwatch_dashboard_name" {
+  description = "Name of the CloudWatch dashboard. If not specified, defaults to `<var.name>-vpc-overview`"
+  type        = string
+  default     = null
+}
+
+variable "enable_nat_gateway_alarms" {
+  description = "Should be true to create CloudWatch alarms for NAT Gateway errors (e.g. ErrorPortAllocation, PacketsDropCount)"
+  type        = bool
+  default     = false
+}
+
+variable "nat_gateway_alarm_actions" {
+  description = "List of ARNs (e.g. SNS topics) to trigger when NAT Gateway alarms enter ALARM state"
+  type        = list(string)
+  default     = []
+}
+
+variable "nat_gateway_alarm_ok_actions" {
+  description = "List of ARNs to trigger when NAT Gateway alarms return to OK state"
+  type        = list(string)
+  default     = []
+}
+
+variable "nat_gateway_alarm_evaluation_periods" {
+  description = "The number of periods over which data is compared to the specified threshold for NAT Gateway alarms"
+  type        = number
+  default     = 1
+}
+
+variable "nat_gateway_alarm_period" {
+  description = "The period in seconds over which the specified statistic is applied for NAT Gateway alarms"
+  type        = number
+  default     = 300
+}
+
 variable "putin_khuylo" {
   description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
   type        = bool

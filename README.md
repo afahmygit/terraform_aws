@@ -192,6 +192,35 @@ Sometimes it is handy to have public access to Redshift clusters (for example if
   enable_public_redshift = true  # <= By default Redshift subnets will be associated with the private route table
 ```
 
+## CloudWatch Monitoring & Dashboard
+
+You can automatically generate an AWS CloudWatch Dashboard containing active metrics, graphs, and health indicators for all VPC resources, as well as CloudWatch metric alarms for NAT Gateways:
+
+```hcl
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  # ... (other VPC arguments)
+
+  # Enable full CloudWatch dashboard with active graphs
+  enable_cloudwatch_dashboard = true
+  cloudwatch_dashboard_name   = "production-vpc-overview"
+
+  # Enable CloudWatch alarms for NAT Gateway health (port allocation errors & packet drops)
+  enable_nat_gateway_alarms = true
+  nat_gateway_alarm_actions = ["arn:aws:sns:us-east-1:123456789012:network-alerts"]
+}
+```
+
+The default CloudWatch dashboard provides out-of-the-box visibility into:
+- **VPC Details**: Header banner with VPC ID, CIDRs, region, subnet counts, and active NAT Gateways.
+- **Network Address Usage (NAU)**: Time-series graphs tracking IPv4 address consumption across the VPC.
+- **VPC Flow Logs Ingestion**: Ingested byte volume and log event counts.
+- **NAT Gateway Traffic**: Inbound and outbound bytes per NAT gateway.
+- **NAT Gateway Connections**: Active connections, established connections, and connection attempt rates.
+- **NAT Gateway Health & Errors**: Dedicated error graphs alerting on source port exhaustion (`ErrorPortAllocation`) and dropped packets (`PacketsDropCount`).
+- **NAT Gateway Packet Throughput**: Inbound and outbound packets per NAT gateway.
+
 ## Transit Gateway (TGW) integration
 
 It is possible to integrate this VPC module with [terraform-aws-transit-gateway module](https://github.com/terraform-aws-modules/terraform-aws-transit-gateway) which handles the creation of TGW resources and VPC attachments. See [complete example there](https://github.com/terraform-aws-modules/terraform-aws-transit-gateway/tree/master/examples/complete).

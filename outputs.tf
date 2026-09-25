@@ -667,3 +667,27 @@ output "name" {
   description = "The name of the VPC specified as argument to this module"
   value       = var.name
 }
+
+################################################################################
+# CloudWatch Monitoring & Dashboard
+################################################################################
+
+output "cloudwatch_dashboard_arn" {
+  description = "The ARN of the CloudWatch dashboard"
+  value       = try(aws_cloudwatch_dashboard.this[0].dashboard_arn, null)
+}
+
+output "cloudwatch_dashboard_name" {
+  description = "The name of the CloudWatch dashboard"
+  value       = try(aws_cloudwatch_dashboard.this[0].dashboard_name, null)
+}
+
+output "nat_gateway_port_allocation_error_alarm_arns" {
+  description = "ARNs of the NAT Gateway ErrorPortAllocation CloudWatch alarms"
+  value       = aws_cloudwatch_metric_alarm.nat_gateway_error_port_allocation[*].arn
+}
+
+output "nat_gateway_packets_drop_alarm_arns" {
+  description = "ARNs of the NAT Gateway PacketsDropCount CloudWatch alarms"
+  value       = aws_cloudwatch_metric_alarm.nat_gateway_packets_drop[*].arn
+}
