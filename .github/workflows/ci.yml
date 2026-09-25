@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    name: Terraform Format & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.x"
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+
+      - name: Validate root module
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate VPC Endpoints submodule
+        run: |
+          cd modules/vpc-endpoints
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate examples
+        run: |
+          for example in examples/*/; do
+            if [ -d "$example" ]; then
+              echo "==> Validating $example"
+              (cd "$example" && terraform init -backend=false && terraform validate)
+            fi
+          done

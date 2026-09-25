@@ -1205,7 +1205,7 @@ locals {
 }
 
 resource "aws_eip" "nat" {
-  count = local.create_vpc && var.enable_nat_gateway && !var.reuse_nat_ips ? local.nat_gateway_count : 0
+  count = local.create_vpc && var.enable_nat_gateway && var.nat_gateway_connectivity_type == "public" && !var.reuse_nat_ips ? local.nat_gateway_count : 0
 
   region = var.region
 
@@ -1230,14 +1230,19 @@ resource "aws_nat_gateway" "this" {
 
   region = var.region
 
-  allocation_id = element(
+  allocation_id = var.nat_gateway_connectivity_type == "private" ? null : element(
     local.nat_gateway_ips,
     var.single_nat_gateway ? 0 : count.index,
   )
-  subnet_id = element(
+  subnet_id = length(var.nat_gateway_subnet_ids) > 0 ? element(var.nat_gateway_subnet_ids, var.single_nat_gateway ? 0 : count.index) : element(
     aws_subnet.public[*].id,
     var.single_nat_gateway ? 0 : count.index,
   )
+  connectivity_type = var.nat_gateway_connectivity_type
+
+  secondary_allocation_ids           = var.nat_gateway_secondary_allocation_ids
+  secondary_private_ip_address_count = var.nat_gateway_secondary_private_ip_address_count
+  secondary_private_ip_addresses     = var.nat_gateway_secondary_private_ip_addresses
 
   tags = merge(
     {

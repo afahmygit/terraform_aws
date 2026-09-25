@@ -1221,6 +1221,36 @@ variable "enable_nat_gateway" {
   default     = false
 }
 
+variable "nat_gateway_connectivity_type" {
+  description = "Connectivity type for the NAT Gateway. Valid values are `private` and `public`"
+  type        = string
+  default     = "public"
+}
+
+variable "nat_gateway_subnet_ids" {
+  description = "A list of subnet IDs where the NAT Gateway(s) should be deployed. Defaults to public subnets if not specified."
+  type        = list(string)
+  default     = []
+}
+
+variable "nat_gateway_secondary_allocation_ids" {
+  description = "List of secondary Elastic IP allocation IDs to assign to the NAT Gateway(s)"
+  type        = list(string)
+  default     = null
+}
+
+variable "nat_gateway_secondary_private_ip_address_count" {
+  description = "The number of secondary private IPv4 addresses you want to assign to the NAT Gateway(s)"
+  type        = number
+  default     = null
+}
+
+variable "nat_gateway_secondary_private_ip_addresses" {
+  description = "List of secondary private IPv4 addresses to assign to the NAT Gateway(s)"
+  type        = list(string)
+  default     = null
+}
+
 variable "nat_gateway_destination_cidr_block" {
   description = "Used to pass a custom destination route for private NAT Gateway. If not specified, the default 0.0.0.0/0 is used as a destination route"
   type        = string

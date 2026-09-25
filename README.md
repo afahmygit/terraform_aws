@@ -109,6 +109,38 @@ If `one_nat_gateway_per_az = true` and `single_nat_gateway = false`, then the mo
 - The variable `var.azs` **must** be specified.
 - The number of public subnet CIDR blocks specified in `public_subnets` **must** be greater than or equal to the number of availability zones specified in `var.azs`. This is to ensure that each NAT Gateway has a dedicated public subnet to deploy to.
 
+### Private NAT Gateway
+
+AWS supports creating Private NAT Gateways that do not require an Elastic IP and are used for communication between private networks (e.g. across Transit Gateways or on-premises networks):
+
+```hcl
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  # ...
+  enable_nat_gateway            = true
+  nat_gateway_connectivity_type = "private"
+  # optionally specify subnet IDs where the NAT Gateway should be placed:
+  # nat_gateway_subnet_ids      = ["subnet-xxx", "subnet-yyy"]
+}
+```
+
+### Secondary NAT Gateway IPs
+
+To avoid port exhaustion and increase concurrency under high traffic loads, you can assign secondary allocation IDs or private IP addresses:
+
+```hcl
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  # ...
+  enable_nat_gateway                              = true
+  nat_gateway_secondary_allocation_ids            = [aws_eip.secondary.id]
+  # Or for private NAT gateways:
+  # nat_gateway_secondary_private_ip_address_count = 2
+}
+```
+
 ## "private" versus "intra" subnets
 
 By default, if NAT Gateways are enabled, private subnets will be configured with routes for Internet traffic that point at the NAT Gateways configured by use of the above options.
